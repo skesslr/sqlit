@@ -39,6 +39,7 @@ class InlineValueView(Container):
     InlineValueView #value-content {
         width: auto;
         height: auto;
+        max-width: 100%;
     }
 
     InlineValueView #json-tree {
@@ -63,7 +64,7 @@ class InlineValueView(Container):
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="syntax-scroll", classes="hidden"):
-            yield Static("", id="value-content", markup=False)
+            yield Static("", id="value-content", markup=False, shrink=True)
         yield JSONTreeView("JSON", id="json-tree", classes="hidden")
 
     def set_value(self, value: str, column_name: str = "") -> None:
@@ -126,10 +127,6 @@ class InlineValueView(Container):
         if self._is_json and self._parsed_json is not None:
             formatted = json.dumps(self._parsed_json, indent=2, ensure_ascii=False)
             return Syntax(formatted, "json", theme="ansi_dark", word_wrap=True)
-
-        wrap_width = max(self.size.width - 4, 20) if self.size.width > 0 else 100
-        if len(self._raw_value) > wrap_width and "\n" not in self._raw_value:
-            return textwrap.fill(self._raw_value, width=wrap_width)
 
         return self._raw_value
 
